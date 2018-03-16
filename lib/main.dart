@@ -72,6 +72,8 @@ class _NavigationState extends State<MainNavigation> {
   @override
   void initState() {
     super.initState();
+
+
     /*
     for (NavigationIconView view in _navigationViews)
       view.controller.addListener(_rebuild);
