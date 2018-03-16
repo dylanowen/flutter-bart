@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:flutter_bart/pages/map_page.dart';
 import 'package:flutter_bart/pages/settings_page.dart';
-import 'package:flutter_bart/pages/departures_page.dart';
+import 'package:flutter_bart/pages/departures/departures_page.dart';
 import 'package:flutter/foundation.dart';
 
 void main() => runApp(new App());

@@ -1,10 +1,9 @@
+import 'package:flutter_bart/bart/station.dart';
+import 'package:flutter_bart/bart/station_departures.dart';
 import 'package:flutter_bart/config.dart';
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/foundation.dart';
 
 class ClientException implements Exception {
 
@@ -25,7 +24,7 @@ class BartClient {
   Future<Config> _config = Config.get();
   HttpClient _client = new HttpClient();
 
-  Future<List<String>> getStations() async {
+  Future<List<Station>> getStations() async {
     final Uri uri = await _buildUri(
         path: '/stn.aspx',
         queryParms: { 'cmd': 'stns'}
@@ -33,7 +32,22 @@ class BartClient {
     final Map<String, dynamic> json = await _getCall(uri);
     List<Map<String, String>> stations = json['root']['stations']['station'];
 
-    return stations.map((station) => station['abbr']).toList();
+    return stations.map(Station.codec.decoder.convert).toList();
+  }
+
+  Future<List<StationDepartures>> getDepartures(Station station) async {
+    final Uri uri = await _buildUri(
+        path: '/etd.aspx',
+        queryParms: {
+          'cmd': 'etd',
+          'orig': station.abbreviation,
+        }
+    );
+
+    final Map<String, dynamic> json = await _getCall(uri);
+    List<Map<String, String>> stations = json['root']['station'];
+
+    return stations.map(StationDepartures.decoder.convert).toList();
   }
 
   Future<Map<String, dynamic>> _getCall(Uri url) async {
@@ -46,7 +60,8 @@ class BartClient {
       return JSON.decode(json);
     }
     else {
-      throw new ClientException('Unexpected response code: ${response.statusCode}');
+      throw new ClientException(
+          'Unexpected response code: ${response.statusCode}');
     }
   }
 

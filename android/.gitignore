@@ -8,3 +8,11 @@
 /build
 /captures
 GeneratedPluginRegistrant.java
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# Don't exclude the gradle wrapper
+!gradle/**/*.jar

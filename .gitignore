@@ -9,4 +9,10 @@ ios/.generated/
 packages
 .flutter-plugins
 
+*.iml
+*.ipr
+*.iws
+.idea
+out
+
 config.json
