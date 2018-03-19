@@ -60,7 +60,7 @@ class PreferenceList<S> extends _AbstractPreference<S, List<S>> {
   @override
   Future<void> set(List<S> input) {
     return _AbstractPreference._preferences.then((prefs) {
-      final List<String> value = input.map(codec.encode);
+      final List<String> value = input.map(codec.encode).toList();
 
       prefs.setStringList(key, value);
 

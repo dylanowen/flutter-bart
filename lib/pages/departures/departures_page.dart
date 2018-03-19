@@ -2,33 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bart/bart/bart_client.dart';
 import 'package:flutter_bart/bart/station.dart';
 import 'package:flutter_bart/pages/departures/station_list_item.dart';
+import 'package:flutter_bart/system.dart';
 import 'package:flutter_bart/utils/preference.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dart:async';
 
 class DeparturesPage extends StatefulWidget {
+  final BartClient client;
 
-  const DeparturesPage();
+  DeparturesPage({RuntimeSystem system})
+      : client = new BartClient((system ?? RuntimeSystem.get()).config);
 
   @override
   _DeparturesState createState() {
     final _DeparturesState state = new _DeparturesState();
-    //state.refreshStations();
+    state.refreshStations();
 
     return state;
   }
-
 }
 
 class _DeparturesState extends State<DeparturesPage> {
-
-  static PreferenceList<Station> cachedStations = new PreferenceList(
-      'bart.cached-stations', Station.codec);
-  static PreferenceList<String> favoriteStations = new PreferenceStringList(
-      'bart.favorite-stations');
-
-  final BartClient client = new BartClient();
+  static PreferenceList<Station> cachedStations =
+      new PreferenceList('bart.cached-stations', Station.codec);
 
   final Future<SharedPreferences> preferences = SharedPreferences.getInstance();
 
@@ -45,27 +42,28 @@ class _DeparturesState extends State<DeparturesPage> {
     //_stations.addAll(iterable)
   }
 
-  void _favoriteUpdated(String abbreviation) {
-
-  }
+  void _favoriteUpdated(String abbreviation) {}
 
   @override
   Widget build(BuildContext context) {
     //Navigator.of(context).push(new PopupRoute())
 
-    return new Center(
-      // Center is a layout widget. It takes a single child and positions it
-      // in the middle of the parent.
-      child: new ListView(
-        children: _stations
-            .map((Station station) => new StationListItem(station: station))
-            .toList(),
-      ),
+    return new Navigator(
+      initialRoute: '/',
+      onGenerateRoute: (RouteSettings settings) {
+        return new PageRouteBuilder(pageBuilder: (BuildContext context, _, __) {
+          return new ListView(
+            children: _stations
+                .map((Station station) => new StationListItem(station: station))
+                .toList(),
+          );
+        });
+      },
     );
   }
 
   void refreshStations() async {
-    List<Station> stations = await client.getStations();
+    List<Station> stations = await widget.client.getStations();
 
     setState(() {
       _stations.addAll(stations);

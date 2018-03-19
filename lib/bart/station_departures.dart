@@ -1,14 +1,17 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bart/bart/station.dart';
+import 'package:flutter_bart/json/json_decoder.dart';
+import 'package:flutter_bart/json/json_object_decoder.dart';
+import 'package:flutter_bart/json/json_simple_decoder.dart';
+import 'package:flutter_bart/json/value_type.dart';
 import 'package:flutter_bart/utils/simple_codec.dart';
 
-const String _etdKey = 'etd';
-
+@immutable
 class StationDepartures extends Station {
 
-  static SimpleDecoder<StationDepartures> decoder = new SimpleDecoder({
-    #etd: 'etd',
-  }
-    ..addAll(Station.JsonKeys), StationDepartures.fromMap);
+  static JsonObjectDecoder<StationDepartures> decoder = TypedDecoder.objectValue<StationDepartures>({
+    #etd: TypedDecoder.list('etd', Departure.decoder, const ListType<Departure>()),
+  }, StationDepartures.fromMap, const ObjectType<StationDepartures>(), [Station.decoder]);
 
   final List<Departure> departures;
 
@@ -20,22 +23,24 @@ class StationDepartures extends Station {
     return new StationDepartures(
       map[#abbr],
       map[#name],
-      (map[#etd] as List<dynamic>).map(Departure.decoder.convert).toList(),
+      map[#etd],
     );
   }
 }
 
+@immutable
 class Departure {
-  static SimpleDecoder<Departure> decoder = new SimpleDecoder({
-    #destination: 'destination',
-    #abbreviation: 'abbreviation',
-    #limited: 'limited',
-    #estimate: 'estimate',
-  }, Departure.fromMap);
+
+  static JsonObjectDecoder<Departure> decoder = TypedDecoder.objectValue<Departure>({
+    #destination: TypedDecoder.stringToString('destination'),
+    #abbreviation: TypedDecoder.stringToString('abbreviation'),
+    #limited: TypedDecoder.stringToBool('limited'),
+    #estimate: TypedDecoder.list('estimate', Estimate.decoder, const ListType<Estimate>()),
+  }, Departure.fromMap, const ObjectType<Departure>(), [Station.decoder]);
 
   final String destination;
   final String abbreviation;
-  final int limited;
+  final bool limited;
   final List<Estimate> estimates;
 
   const Departure(this.destination, this.abbreviation, this.limited,
@@ -46,23 +51,26 @@ class Departure {
       map[#destination],
       map[#abbreviation],
       map[#limited],
-      (map[#estimate] as List<dynamic>).map(Estimate.decoder.convert).toList(),
+      map[#estimate],
     );
   }
 }
 
+@immutable
 class Estimate {
 
-  static SimpleDecoder<Estimate> decoder = new SimpleDecoder({
-    #minutes: 'minutes',
-    #platform: 'platform',
-    #direction: 'direction',
-    #length: 'length',
-    #color: 'color',
-    #hexColor: 'hexColor',
-    #bikeFlag: 'bikeFlag',
-    #delay: 'delay',
-  }, Estimate.fromMap);
+  static JsonObjectDecoder<Estimate> decoder = TypedDecoder.objectValue<Estimate>({
+    #minutes: TypedDecoder.simple<String, int>('minutes', ValueType.stringToInt, (String input) {
+      return (input.toLowerCase() == 'leaving') ? 0 : StringToIntDecoder.parse(input);
+    }),
+    #platform: TypedDecoder.stringToInt('platform'),
+    #direction: TypedDecoder.stringToString('direction'),
+    #length: TypedDecoder.stringToInt('length'),
+    #color: TypedDecoder.stringToString('color'),
+    #hexColor: TypedDecoder.stringToString('hexColor'),
+    #bikeFlag: TypedDecoder.stringToBool('bikeFlag'),
+    #delay: TypedDecoder.stringToInt('delay'),
+  }, Estimate.fromMap, const ObjectType<Estimate>());
 
   final int minutes;
   final int platform;
@@ -90,7 +98,7 @@ class Estimate {
       map[#length],
       map[#color],
       map[#hexColor],
-      map[#bikeFlag],
+      map[#bikeflag],
       map[#delay],
     );
   }

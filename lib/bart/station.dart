@@ -1,17 +1,30 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter_bart/json/json_decoder.dart';
+import 'package:flutter_bart/json/json_object_decoder.dart';
 import 'package:flutter_bart/utils/simple_codec.dart';
+import 'package:flutter_bart/json/value_type.dart';
 
-
+@immutable
 class Station {
 
   static const Map<Symbol, String> JsonKeys = const {
     #abbr: 'abbr',
-    #name: 'name'
+    #name: 'name',
   };
 
-  static SimpleCodec<Station> codec = new SimpleCodec(JsonKeys, {
+  static Map<Symbol, MapperGet> getters = {
     #abbr: (s) => s.abbreviation,
     #name: (s) => s.name,
-  }, Station.fromMap);
+  };
+
+  static JsonObjectDecoder<Station> decoder = TypedDecoder.objectValue<Station>({
+    #abbr: TypedDecoder.stringToString('abbr'),
+    #name: TypedDecoder.stringToString('name'),
+  }, Station.fromMap, const ObjectType<Station>());
+
+  static SimpleCodec<Station> codec = new SimpleCodec(JsonKeys, getters, Station.fromMap);
 
   final String name;
   final String abbreviation;
@@ -23,28 +36,25 @@ class Station {
   }
 }
 
+@immutable
+class StationDetail extends Station {
 
-/*
+  static JsonObjectDecoder<StationDetail> decoder = TypedDecoder.objectValue<Station>({
+    #latitude: TypedDecoder.stringToDouble('latitude'),
+    #longitude: TypedDecoder.stringToDouble('longitude'),
+  }, Station.fromMap, const ObjectType<StationDetail>(), [Station.decoder]);
 
+  final double latitude;
+  final double longitude;
 
-class StationEncoder extends Converter<Station, Map<String, String>> {
-  @override
-  Map<String, String> convert(Station input) {
-    return {
-      _abbrKey: input.abbreviation,
-      _nameKey: input.name,
-    };
+  const StationDetail(String abbreviation, String name, this.latitude, this.longitude): super(abbreviation, name);
+
+  static StationDetail fromMap(Map<Symbol, dynamic> map) {
+    return new StationDetail(
+        map[#abbr],
+        map[#name],
+        double.parse(map[#latitude]),
+        double.parse(map[#longitude]),
+    );
   }
 }
-
-class StationDecoder extends Converter<Map<String, String>, Station> {
-
-  static const singleton = const StationDecoder();
-
-  const StationDecoder();
-
-  @override
-  Station convert(Map<String, String> input) {
-    return new Station(input[_abbrKey], input[_nameKey]);
-  }
-}*/

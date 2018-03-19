@@ -13,24 +13,22 @@ class StationListItem extends StatefulWidget {
 
   @override
   _StationState createState() {
-    return new _StationState(station);
+    return new _StationState();
   }
 
 }
 
 class _StationState extends State<StationListItem> {
 
-  final Station station;
-
-  _StationState(this.station);
+  _StationState();
 
   @override
   Widget build(BuildContext context) {
     return new ListTile(
-      title: new Text(station.name),
+      title: new Text(widget.station.name),
       onTap: () => Navigator.of(context).push(new PageRouteBuilder(
           pageBuilder: (BuildContext context, _, __) {
-            return new StationDeparturesPage(station: station);
+            return new StationDeparturesPage(station: widget.station);
           },
           transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
             return new FadeTransition(

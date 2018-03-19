@@ -1,9 +1,13 @@
 import 'package:flutter_bart/bart/station.dart';
 import 'package:flutter_bart/bart/station_departures.dart';
 import 'package:flutter_bart/config.dart';
+import 'package:flutter_bart/json/json_decoder.dart';
+import 'package:flutter_bart/json/json_object_decoder.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
+
+import 'package:flutter_bart/system.dart';
 
 class ClientException implements Exception {
 
@@ -21,21 +25,23 @@ class BartClient {
 
   static const String _bartBaseUrl = 'http://api.bart.gov/api';
 
-  Future<Config> _config = Config.get();
+  Future<Config> _config;
   HttpClient _client = new HttpClient();
 
-  Future<List<Station>> getStations() async {
+  BartClient(this._config);
+
+  Future<List<StationDetail>> getStations() async {
     final Uri uri = await _buildUri(
         path: '/stn.aspx',
         queryParms: { 'cmd': 'stns'}
     );
     final Map<String, dynamic> json = await _getCall(uri);
-    List<Map<String, String>> stations = json['root']['stations']['station'];
+    final List<Map<String, dynamic>> stations = json['root']['stations']['station'];
 
-    return stations.map(Station.codec.decoder.convert).toList();
+    return stations.map(StationDetail.decoder.convert).toList();
   }
 
-  Future<List<StationDepartures>> getDepartures(Station station) async {
+  Future<StationDepartures> getDepartures(Station station) async {
     final Uri uri = await _buildUri(
         path: '/etd.aspx',
         queryParms: {
@@ -47,7 +53,7 @@ class BartClient {
     final Map<String, dynamic> json = await _getCall(uri);
     List<Map<String, String>> stations = json['root']['station'];
 
-    return stations.map(StationDepartures.decoder.convert).toList();
+    return stations.map(StationDepartures.decoder.convert).first;
   }
 
   Future<Map<String, dynamic>> _getCall(Uri url) async {
