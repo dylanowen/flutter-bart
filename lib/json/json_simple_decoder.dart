@@ -11,12 +11,12 @@ class SimpleValueDecoder<T, S> extends JsonValueDecoder<T, S> {
   const SimpleValueDecoder(this.parser, ValueType<T, S> valueType) : super(valueType);
 
   @override
-  S decode(T input, List<String> stack) {
+  S decode(T input, List<String> path) {
     try {
       return parser(input);
     }
     catch (e) {
-      throw new ParseException('Failed to parse: ${e.toString()}', stack);
+      throw new ParseException('Failed to parse: ${e.toString()}', path);
     }
   }
 }

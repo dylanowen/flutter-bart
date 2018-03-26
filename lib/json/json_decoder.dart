@@ -24,11 +24,11 @@ abstract class JsonValueDecoder<T, S> extends Converter<T, S> {
   @override
   S convert(T input) => decode(input, const ['root']);
 
-  void validateInput(dynamic input, List<String> stack) {
+  void validateInput(dynamic input, List<String> path) {
     if (!entryType.isIn(input)) {
       final Type inputType = input.runtimeType;
 
-      throw new ParseException('Unexpected type $inputType for ${input.toString()}', stack);
+      throw new ParseException('Unexpected type $inputType for ${input.toString()}', path);
     }
   }
 }

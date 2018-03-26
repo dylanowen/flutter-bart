@@ -9,7 +9,7 @@ import 'package:flutter_bart/system.dart';
 import 'package:flutter_bart/utils/logging.dart';
 import 'package:logging/logging.dart';
 
-Logger log = Logging.build(StationDeparturesPage);
+Logger _log = Logging.build(StationDeparturesPage);
 
 class StationDeparturesPage extends StatefulWidget {
   final BartClient client;
@@ -22,7 +22,6 @@ class StationDeparturesPage extends StatefulWidget {
   @override
   _StationDepartureState createState() {
     final _StationDepartureState state = new _StationDepartureState();
-    //state.refreshStations();
 
     return state;
   }
@@ -30,7 +29,7 @@ class StationDeparturesPage extends StatefulWidget {
 
 class _DepartureListItem extends StatelessWidget {
 
-  Departure departure;
+  final Departure departure;
 
   _DepartureListItem({this.departure});
 
@@ -61,7 +60,7 @@ class _StationDepartureState extends State<StationDeparturesPage> {
   List<Departure> _departures;
 
   void _refresh() {
-    log.info('Refreshing for ${widget.station.abbreviation}');
+    _log.info('Refreshing for ${widget.station.abbreviation}');
 
     widget.client.getDepartures(widget.station).then((StationDepartures stationDepartures) {
       if (mounted) {
@@ -80,7 +79,7 @@ class _StationDepartureState extends State<StationDeparturesPage> {
     _refresh();
 
     // start our timer
-    timer = new Timer.periodic(new Duration(seconds: 10), (Timer _) => _refresh());
+    timer = new Timer.periodic(new Duration(seconds: 30), (Timer _) => _refresh());
   }
 
   @override

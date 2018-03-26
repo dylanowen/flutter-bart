@@ -10,21 +10,21 @@ class JsonListDecoder<S> extends JsonValueDecoder<List<dynamic>, List<S>> {
   JsonListDecoder(this._decoder): super(new ListType<S>());
 
   @override
-  List<S> decode(List<dynamic> inputList, List<String> stack) {
+  List<S> decode(List<dynamic> inputList, List<String> path) {
     final List<S> result = [];
 
     for (int i = 0; i < inputList.length; i++) {
       final dynamic input = inputList[i];
-      final List<String> newStack = new List.from(stack)..add('[$i]');
+      final List<String> newPath = new List.from(path)..add('[$i]');
 
-      _decoder.validateInput(input, newStack);
+      _decoder.validateInput(input, newPath);
 
       try {
-        result.add(_decoder.decode(input, newStack));
+        result.add(_decoder.decode(input, newPath));
       } on ParseException catch(e) {
         throw e;
       } catch (e) {
-        throw new ParseException('Failed to parse list', newStack, e);
+        throw new ParseException('Failed to parse list', newPath, e);
       }
     }
 

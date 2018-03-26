@@ -43,6 +43,14 @@ abstract class Logging {
     });
   }
 
+  static StackTrace getStackTrace() {
+    try {
+      throw new Exception("");
+    } catch (e, s) {
+      return s;
+    }
+  }
+
   static _updateAlignment(String name) {
     final int alignment = name.length
         + 2 + 2 // add for our spaces and brackets

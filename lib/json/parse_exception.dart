@@ -1,13 +1,13 @@
 
 class ParseException implements Exception {
   final String message;
-  final List<String> stack;
-  final dynamic cause;
+  final List<String> path;
+  final Object cause;
 
-  ParseException(this.message, this.stack, [this.cause]);
+  ParseException(this.message, this.path, [this.cause]);
 
   @override
   String toString() {
-    return '$message\n${this.stack.join('')}\n${cause?.toString() ?? ''}';
+    return '$message\n${this.path.join('')}\n${cause?.toString() ?? ''}';
   }
 }

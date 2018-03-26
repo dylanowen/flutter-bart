@@ -21,9 +21,9 @@ class JsonObjectDecoder<S> extends JsonValueDecoder<Map<String, dynamic>, S> {
         this._inherited = _inherited ?? [],
         super(valueType);
 
-  Map<Symbol, dynamic> decodeToMap(Map<String, dynamic> input, List<String> stack) {
+  Map<Symbol, dynamic> decodeToMap(Map<String, dynamic> input, List<String> path) {
     if (input == null) {
-      throw new ParseException('Unexpected null input for object', stack);
+      throw new ParseException('Unexpected null input for object', path);
     }
 
     final Map<String, dynamic> cleanCopy = new Map.from(input)
@@ -33,7 +33,7 @@ class JsonObjectDecoder<S> extends JsonValueDecoder<Map<String, dynamic>, S> {
     final Map<Symbol, dynamic> results = {};
 
     // add all our parent's results
-    _inherited.forEach((parent) => results.addAll(parent.decodeToMap(input, stack)));
+    _inherited.forEach((parent) => results.addAll(parent.decodeToMap(input, path)));
 
     final Map<Symbol, dynamic> thisResultMap = cleanCopy
         .map((key, value) {
@@ -42,7 +42,7 @@ class JsonObjectDecoder<S> extends JsonValueDecoder<Map<String, dynamic>, S> {
           final JsonValueDecoder decoder = entryDecoder.decoder;
           assert(symbol != null && entryDecoder != null);
 
-          final List<String> newStack = new List.from(stack)..add('.$key');
+          final List<String> newStack = new List.from(path)..add('.$key');
 
           decoder.validateInput(value, newStack);
 
@@ -51,7 +51,7 @@ class JsonObjectDecoder<S> extends JsonValueDecoder<Map<String, dynamic>, S> {
           } on ParseException catch(e) {
             throw e;
           } catch (e) {
-            throw new ParseException('Failed to parse object', stack, e);
+            throw new ParseException('Failed to parse object', path, e);
           }
         });
 
@@ -61,13 +61,13 @@ class JsonObjectDecoder<S> extends JsonValueDecoder<Map<String, dynamic>, S> {
   }
 
   @override
-  S decode(Map<String, dynamic> input, List<String> stack) {
-    final Map<Symbol, dynamic> results = decodeToMap(input, stack);
+  S decode(Map<String, dynamic> input, List<String> path) {
+    final Map<Symbol, dynamic> results = decodeToMap(input, path);
 
     try {
       return _constructor(results);
     } catch (e) {
-      throw new ParseException('Failed to build object with ${_constructor.toString}', stack, e);
+      throw new ParseException('Failed to build object with ${_constructor.toString}', path, e);
     }
   }
 }
