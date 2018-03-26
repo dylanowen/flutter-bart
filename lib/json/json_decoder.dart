@@ -35,7 +35,7 @@ abstract class JsonValueDecoder<T, S> extends Converter<T, S> {
 
 abstract class TypedDecoder {
 
-  static JsonEntryDecoder<T, S> simple<T, S>(String key, ValueType<T, S> valueType, [DecoderFunc<T, S> decoder]) {
+  static JsonEntryDecoder<T, S> simple<T, S>(String key, ValueType<T, S> valueType, [ParserFunction<T, S> decoder]) {
     if (decoder != null) {
       return new JsonEntryDecoder(key, new SimpleValueDecoder(decoder, valueType));
     }
@@ -48,8 +48,8 @@ abstract class TypedDecoder {
     return new JsonEntryDecoder(key, decoder);
   }
 
-  static JsonEntryDecoder<List<dynamic>, List<S>> list<S>(String key, JsonValueDecoder<dynamic, S> decoder, ListType<S> valueType) {
-    return new JsonEntryDecoder(key, listValue<S>(decoder, valueType));
+  static JsonEntryDecoder<List<dynamic>, List<S>> list<S>(String key, JsonValueDecoder<dynamic, S> decoder) {
+    return new JsonEntryDecoder(key, listValue<S>(decoder));
   }
 
 
@@ -132,7 +132,7 @@ abstract class TypedDecoder {
     return new JsonObjectDecoder<S>(_decoders, constructor, valueType, _inherited);
   }
 
-  static JsonListDecoder<S> listValue<S>(JsonValueDecoder<dynamic, S> decoder, ListType<S> valueType) {
-    return new JsonListDecoder<S>(decoder, valueType);
+  static JsonListDecoder<S> listValue<S>(JsonValueDecoder<dynamic, S> decoder) {
+    return new JsonListDecoder<S>(decoder);
   }
 }

@@ -3,17 +3,17 @@ import 'package:flutter_bart/json/json_decoder.dart';
 import 'package:flutter_bart/json/parse_exception.dart';
 import 'package:flutter_bart/json/value_type.dart';
 
-typedef S DecoderFunc<T, S>(T input);
+typedef S ParserFunction<T, S>(T input);
 
 class SimpleValueDecoder<T, S> extends JsonValueDecoder<T, S> {
-  final DecoderFunc<T, S> decoderFunc;
+  final ParserFunction<T, S> parser;
 
-  const SimpleValueDecoder(this.decoderFunc, ValueType<T, S> valueType) : super(valueType);
+  const SimpleValueDecoder(this.parser, ValueType<T, S> valueType) : super(valueType);
 
   @override
   S decode(T input, List<String> stack) {
     try {
-      return decoderFunc(input);
+      return parser(input);
     }
     catch (e) {
       throw new ParseException('Failed to parse: ${e.toString()}', stack);
@@ -148,10 +148,6 @@ typedef bool _TypeTest(dynamic input);
 class JsonSimpleDecoder {
 
   JsonSimpleDecoder._noImpl();
-
-  static TypeMatcher test<T>() {
-    return const TypeMatcher<T>();
-  }
 
   static JsonValueDecoder get<T, S>(ValueType<T, S> valueType) {
     final Symbol tType = _getType(valueType.isIn);

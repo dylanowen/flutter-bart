@@ -4,13 +4,16 @@ import 'package:flutter_bart/pages/map_page.dart';
 import 'package:flutter_bart/pages/settings_page.dart';
 import 'package:flutter_bart/pages/departures/departures_page.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_bart/system.dart';
+import 'package:flutter_bart/utils/logging.dart';
+import 'package:logging/logging.dart';
 
 void main() => runApp(new App());
 
 class App extends StatelessWidget {
 
-  App();
+  App() {
+    Logging.init(level: Level.ALL);
+  }
 
   @override
   Widget build(BuildContext context) {

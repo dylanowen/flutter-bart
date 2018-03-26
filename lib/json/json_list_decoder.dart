@@ -7,7 +7,7 @@ class JsonListDecoder<S> extends JsonValueDecoder<List<dynamic>, List<S>> {
 
   JsonValueDecoder<dynamic, S> _decoder;
 
-  JsonListDecoder(this._decoder, ListType<S> valueType): super(valueType);
+  JsonListDecoder(this._decoder): super(new ListType<S>());
 
   @override
   List<S> decode(List<dynamic> inputList, List<String> stack) {
