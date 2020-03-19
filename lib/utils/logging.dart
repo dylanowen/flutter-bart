@@ -1,3 +1,4 @@
+import 'package:flutter_bart/utils/wrapped_exception.dart';
 import 'package:logging/logging.dart';
 import 'dart:math';
 
@@ -35,6 +36,9 @@ abstract class Logging {
         message += ' : ' + record.error;
       }
 
+      if (record.error is WrappedException) {
+        message += '\n' + (record.error as WrappedException).stackTrace.toString();
+      }
       if (record.stackTrace != null) {
         message += '\n' + record.stackTrace.toString();
       }

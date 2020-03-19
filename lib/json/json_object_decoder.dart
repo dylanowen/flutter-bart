@@ -2,19 +2,19 @@ import 'package:flutter_bart/json/json_decoder.dart';
 import 'package:flutter_bart/json/parse_exception.dart';
 import 'package:flutter_bart/json/value_type.dart';
 
-typedef S MapConstructor<S>(Map<Symbol, dynamic> map);
+typedef D MapConstructor<D>(Map<Symbol, dynamic> map);
 
-class JsonObjectDecoder<S> extends JsonValueDecoder<Map<String, dynamic>, S> {
+class JsonObjectDecoder<D> extends JsonValueDecoder<Map<String, dynamic>, D> {
 
   final Map<Symbol, JsonEntryDecoder> _decoders;
-  final MapConstructor<S> _constructor;
+  final MapConstructor<D> _constructor;
   final List<JsonObjectDecoder> _inherited;
 
   final Map<String, Symbol> _symbolMap;
 
   JsonObjectDecoder(Map<Symbol, JsonEntryDecoder> _decoders,
       this._constructor,
-      ObjectType<S> valueType,
+      ObjectType<D> valueType,
       [List<JsonObjectDecoder> _inherited]):
         this._decoders = _decoders,
         this._symbolMap = _decoders.map((key, decoder) => new MapEntry(decoder.key, key)),
@@ -50,8 +50,8 @@ class JsonObjectDecoder<S> extends JsonValueDecoder<Map<String, dynamic>, S> {
             return new MapEntry(symbol, decoder.decode(value, newStack));
           } on ParseException catch(e) {
             throw e;
-          } catch (e) {
-            throw new ParseException('Failed to parse object', path, e);
+          } catch (e, s) {
+            throw new ParseException('Failed to parse object', path, e, s);
           }
         });
 
@@ -61,13 +61,13 @@ class JsonObjectDecoder<S> extends JsonValueDecoder<Map<String, dynamic>, S> {
   }
 
   @override
-  S decode(Map<String, dynamic> input, List<String> path) {
+  D decode(Map<String, dynamic> input, List<String> path) {
     final Map<Symbol, dynamic> results = decodeToMap(input, path);
 
     try {
       return _constructor(results);
-    } catch (e) {
-      throw new ParseException('Failed to build object with ${_constructor.toString}', path, e);
+    } catch (e, s) {
+      throw new ParseException('Failed to build object with ${_constructor.toString}', path, e, s);
     }
   }
 }

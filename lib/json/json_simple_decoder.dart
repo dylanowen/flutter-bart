@@ -1,22 +1,21 @@
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bart/json/json_decoder.dart';
 import 'package:flutter_bart/json/parse_exception.dart';
 import 'package:flutter_bart/json/value_type.dart';
 
-typedef S ParserFunction<T, S>(T input);
+typedef D ParserFunction<E, D>(E input);
 
-class SimpleValueDecoder<T, S> extends JsonValueDecoder<T, S> {
-  final ParserFunction<T, S> parser;
+class SimpleValueDecoder<E, D> extends JsonValueDecoder<E, D> {
+  final ParserFunction<E, D> parser;
 
-  const SimpleValueDecoder(this.parser, ValueType<T, S> valueType) : super(valueType);
+  const SimpleValueDecoder(this.parser, ValueType<E, D> valueType) : super(valueType);
 
   @override
-  S decode(T input, List<String> path) {
+  D decode(E input, List<String> path) {
     try {
       return parser(input);
     }
-    catch (e) {
-      throw new ParseException('Failed to parse: ${e.toString()}', path);
+    catch (e, s) {
+      throw new ParseException('Failed to parse', path, e, s);
     }
   }
 }
@@ -30,9 +29,9 @@ class UnitValueDecoder<T> extends SimpleValueDecoder<T, T> {
   static T parse<T>(T input) => input;
 }
 
-class SimpleToStringDecoder<T> extends SimpleValueDecoder<T, String> {
+class SimpleToStringDecoder<E> extends SimpleValueDecoder<E, String> {
 
-  const SimpleToStringDecoder(ValueType<T, String> valueType) : super(
+  const SimpleToStringDecoder(ValueType<E, String> valueType) : super(
     SimpleToStringDecoder.parse,
     valueType,
   );
@@ -149,7 +148,7 @@ class JsonSimpleDecoder {
 
   JsonSimpleDecoder._noImpl();
 
-  static JsonValueDecoder get<T, S>(ValueType<T, S> valueType) {
+  static JsonValueDecoder get<E, D>(ValueType<E, D> valueType) {
     final Symbol tType = _getType(valueType.isIn);
     final Symbol sType = _getType(valueType.isOut);
 
@@ -157,7 +156,7 @@ class JsonSimpleDecoder {
       return new UnitValueDecoder(valueType);
     }
     if (sType == #string) {
-      return new SimpleToStringDecoder<T>(valueType as ValueType<T, String>);
+      return new SimpleToStringDecoder<E>(valueType as ValueType<E, String>);
     }
 
     if (tType == #int) {

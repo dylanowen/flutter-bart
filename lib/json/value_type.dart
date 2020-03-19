@@ -10,6 +10,10 @@ class ValueType<In, Out> {
     return toTest is Out;
   }
 
+  ValueType<Out, In> inverse() {
+    return new _InverseType<Out, In>(this);
+  }
+
   static const ValueType<int, int> intToInt = const UnitType<int>();
   static const ValueType<int, double> intToDouble = const ValueType<int, double>();
   static const ValueType<int, String> intToString = const ValueType<int, String>();
@@ -41,4 +45,18 @@ class ObjectType<Out> extends ValueType<Map<String, dynamic>, Out> {
 
 class ListType<Out> extends ValueType<List<dynamic>, List<Out>> {
   const ListType();
+}
+
+class _InverseType<In, Out> extends ValueType<In, Out> {
+  final ValueType<Out, In> other;
+
+  const _InverseType(this.other);
+
+  bool isIn(dynamic toTest) {
+    return !other.isIn(toTest);
+  }
+
+  bool isOut(dynamic toTest) {
+    return !other.isOut(toTest);
+  }
 }

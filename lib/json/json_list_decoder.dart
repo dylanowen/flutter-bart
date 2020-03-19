@@ -3,15 +3,15 @@ import 'package:flutter_bart/json/parse_exception.dart';
 import 'package:flutter_bart/json/value_type.dart';
 
 
-class JsonListDecoder<S> extends JsonValueDecoder<List<dynamic>, List<S>> {
+class JsonListDecoder<D> extends JsonValueDecoder<List<dynamic>, List<D>> {
 
-  JsonValueDecoder<dynamic, S> _decoder;
+  JsonValueDecoder<dynamic, D> _decoder;
 
-  JsonListDecoder(this._decoder): super(new ListType<S>());
+  JsonListDecoder(this._decoder): super(new ListType<D>());
 
   @override
-  List<S> decode(List<dynamic> inputList, List<String> path) {
-    final List<S> result = [];
+  List<D> decode(List<dynamic> inputList, List<String> path) {
+    final List<D> result = [];
 
     for (int i = 0; i < inputList.length; i++) {
       final dynamic input = inputList[i];
@@ -23,8 +23,8 @@ class JsonListDecoder<S> extends JsonValueDecoder<List<dynamic>, List<S>> {
         result.add(_decoder.decode(input, newPath));
       } on ParseException catch(e) {
         throw e;
-      } catch (e) {
-        throw new ParseException('Failed to parse list', newPath, e);
+      } catch (e, s) {
+        throw new ParseException('Failed to parse list', newPath, e, s);
       }
     }
 

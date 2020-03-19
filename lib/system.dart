@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter_bart/config.dart';
 
-
 class RuntimeSystem {
 
   static final RuntimeSystem _singleton = new RuntimeSystem._withDefaults();

@@ -2,27 +2,27 @@ import 'dart:convert';
 
 import 'package:flutter_bart/json/json_list_decoder.dart';
 import 'package:flutter_bart/json/json_object_decoder.dart';
-import 'package:flutter_bart/json/json_simple_decoder.dart';
-import 'package:flutter_bart/json/parse_exception.dart';
 import 'package:flutter_bart/json/value_type.dart';
 
-class JsonEntryDecoder<E, D> {
+/*
+class JsonEntryCodec<T, S> {
   final String key;
-  final JsonValueDecoder<E, D> decoder;
+  final JsonValueDecoder<T, S> decoder;
+  final JsonValueDecoder<S, T> encoder;
 
-  JsonEntryDecoder(this.key, this.decoder);
+  JsonEntryDecoder(this.key, this.decoder, this.encoder);
 }
 
-abstract class JsonValueDecoder<E, D> extends Converter<E, D> {
+abstract class JsonValueDecoder<T, S> extends Converter<T, S> {
 
-  final ValueType<E, D> entryType;
+  final ValueType<T, S> entryType;
 
   const JsonValueDecoder(this.entryType);
 
-  D decode(E input, List<String> stack);
+  S decode(T input, List<String> stack);
 
   @override
-  D convert(E input) => decode(input, const ['root']);
+  S convert(T input) => decode(input, const ['root']);
 
   void validateInput(dynamic input, List<String> path) {
     if (!entryType.isIn(input)) {
@@ -37,21 +37,21 @@ abstract class TypedDecoder {
 
   TypedDecoder._singleton();
 
-  static JsonEntryDecoder<E, D> simple<E, D>(String key, ValueType<E, D> valueType, [ParserFunction<E, D> decoder]) {
+  static JsonEntryDecoder<T, S> simple<T, S>(String key, ValueType<T, S> valueType, [ParserFunction<T, S> decoder]) {
     if (decoder != null) {
       return new JsonEntryDecoder(key, new SimpleValueDecoder(decoder, valueType));
     }
     else {
-      return new JsonEntryDecoder(key, simpleValue<E, D>(valueType));
+      return new JsonEntryDecoder(key, simpleValue<T, S>(valueType));
     }
   }
 
-  static JsonEntryDecoder<Map<String, dynamic>, D> object<D>(String key, JsonObjectDecoder<D> decoder) {
+  static JsonEntryDecoder<Map<String, dynamic>, S> object<S>(String key, JsonObjectDecoder<S> decoder) {
     return new JsonEntryDecoder(key, decoder);
   }
 
-  static JsonEntryDecoder<List<dynamic>, List<D>> list<D>(String key, JsonValueDecoder<dynamic, D> decoder) {
-    return new JsonEntryDecoder(key, listValue<D>(decoder));
+  static JsonEntryDecoder<List<dynamic>, List<S>> list<S>(String key, JsonValueDecoder<dynamic, S> decoder) {
+    return new JsonEntryDecoder(key, listValue<S>(decoder));
   }
 
 
@@ -123,18 +123,19 @@ abstract class TypedDecoder {
   }
 
 
-  static JsonValueDecoder<E, D> simpleValue<E, D>(ValueType<E, D> valueType) {
-    return JsonSimpleDecoder.get<E, D>(valueType);
+  static JsonValueDecoder<T, S> simpleValue<T, S>(ValueType<T, S> valueType) {
+    return JsonSimpleDecoder.get<T, S>(valueType);
   }
 
-  static JsonObjectDecoder<D> objectValue<D>(Map<Symbol, JsonEntryDecoder> _decoders,
-      MapConstructor<D> constructor,
-      ObjectType<D> valueType,
+  static JsonObjectDecoder<S> objectValue<S>(Map<Symbol, JsonEntryDecoder> _decoders,
+      MapConstructor<S> constructor,
+      ObjectType<S> valueType,
       [List<JsonObjectDecoder> _inherited]) {
-    return new JsonObjectDecoder<D>(_decoders, constructor, valueType, _inherited);
+    return new JsonObjectDecoder<S>(_decoders, constructor, valueType, _inherited);
   }
 
-  static JsonListDecoder<D> listValue<D>(JsonValueDecoder<dynamic, D> decoder) {
-    return new JsonListDecoder<D>(decoder);
+  static JsonListDecoder<S> listValue<S>(JsonValueDecoder<dynamic, S> decoder) {
+    return new JsonListDecoder<S>(decoder);
   }
 }
+*/
